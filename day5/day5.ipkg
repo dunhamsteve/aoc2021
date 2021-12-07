@@ -1,0 +1,4 @@
+package day5
+depends = contrib
+main = Main
+sourcedir = "src"
