@@ -1,0 +1,2 @@
+package day12
+depends = contrib
