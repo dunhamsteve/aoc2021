@@ -1,7 +1,16 @@
 
-Notes (backfilled on day 11)
+# Advent of Code 2021
+
+This year I'm attempting AoC in Idris2, which I don't really know. A couple of days I fell back to Python for expediency or did Python first so I could see the full puzzle first, and work on the Idris solution at my leisure. The challenge here is that I don't know the language, don't know the libraries, and I've got a couple of decades of imperative programming behind me. 
+
+
+
+## Notes on Individual Days
+
+(backfilled on day 11)
 
 Day 1
+- Learned how to read files
 
 Day 2
 
