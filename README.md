@@ -37,3 +37,10 @@ Day 9
 Day 10
 
 Day 11
+
+Day 12
+
+Day 13
+
+Had a weird issue I don't understand where (Int,Int) was a (Type,Type) ratherthan a Type.
+
