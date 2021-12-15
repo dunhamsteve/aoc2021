@@ -51,3 +51,7 @@ a choice to be $O(n^2)$ instead of $O(n \log n)$, because I didn't want to take 
 
     ./build/exec/day15  2127.84s user 22.29s system 99% cpu 35:59.38 total
 
+Using a second SortedMap for the unvisited nodes: (score,Point) -> ()
+
+    ./build/exec/day15  2.77s user 0.05s system 99% cpu 2.836 total
+

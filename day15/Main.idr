@@ -6,6 +6,7 @@ import Data.List
 import Data.Vect
 import Data.SortedMap
 import Debug.Trace
+import Data.Buffer
 
 log : Show a => a -> IO ()
 log = putStrLn . show
@@ -34,7 +35,26 @@ part2grid grid (mx, my) (x,y) =
     else let Just v = lookup (x `mod` mx1, y `mod` my1) grid | Nothing => ?shouldntHappen
       in Just  $ domod $ v + (x `div` mx1) + (y `div` my1)
 
-State = SortedMap Point (Int,Bool)
+record State where
+    constructor ST
+    scores : SortedMap Point (Int,Bool)
+    todo : SortedMap (Int, Point) ()
+
+updatePoint : State -> (Int, Point) -> Int -> State
+updatePoint st old@(sc,pt) new =
+    ST (insert  pt (new,False) st.scores)
+       (insert (new,pt) () (delete old st.todo))
+       
+done : State -> (Int,Point) -> State
+done st old@(score,pt) =
+    ST (insert pt (score,True) st.scores)
+       (delete old st.todo)
+
+initial : State
+initial = ST (fromList [((0,0),(0,False))]) (fromList [( (0,(0,0)), () )])
+
+minNode : State -> Maybe (Int,Point)
+minNode st = fst <$> leftMost st.todo
 
 parse : String -> SortedMap Point Int
 parse t = parse' empty 0 0 $ unpack t
@@ -43,8 +63,6 @@ parse t = parse' empty 0 0 $ unpack t
           parse' res x y (c :: cs) = let res' = insert (x,y) (cast c - 48) res
             in parse' res' (x+1) y cs
           parse' res _ _ [] = res
- 
--- dijkstra, without a heap
 
 adj : (Int,Int) -> List (Int,Int)
 adj (x,y) = [(x-1,y), (x+1,y), (x,y-1), (x,y+1)]
@@ -52,39 +70,26 @@ adj (x,y) = [(x-1,y), (x+1,y), (x,y-1), (x,y+1)]
 update : Grid -> Int -> State -> (Int,Int) -> State
 update grid pathCost state pt = 
     let Just cost = grid pt | Nothing => state
-    in case lookup pt state of
-        Just (score, visited) => if score > pathCost + cost then insert pt (pathCost + cost, visited) state else state
-        Nothing => insert pt (pathCost + cost, False) state
+    in case lookup pt state.scores of
+        Just (score, visited) => if score > pathCost + cost 
+            then updatePoint state (score,pt) (pathCost + cost)
+            else state
+        Nothing => updatePoint state (0,pt) (pathCost + cost)
 
 visit : Grid -> State -> (Int,Int) -> State
-visit grid state pt = case lookup pt state of
+visit grid state pt = case lookup pt state.scores of
     -- review - what if it was already scored.
-    Just (path,visit) => foldl (update grid path) (insert pt (path,True) state) (adj pt)
+    Just (path,visit) => foldl (update grid path) (done state (path,pt)) (adj pt)
     Nothing => ?state
 
 unvisited : (Point,(Int,Bool)) -> Bool
 unvisited (_,(_,x)) = not x
 
-minNode : List (Point,(Int,Bool)) -> Maybe Point
-minNode xs = case filter unvisited xs of
-    ((pt,(cost,_)) :: rest) => Just $ go pt cost rest
-    _ => Nothing
-    where go : Point -> Int ->  List (Point,(Int,Bool)) -> Point
-          go pt n ((pt',(n',_)) :: ns) = if n' < n then go pt' n' ns else go pt n ns
-          go pt n [] = pt
-
 findPath : (Int,Int) -> Grid -> State -> Maybe (Int,Bool)
-findPath dest grid st = case minNode $ toList st of
-    Just pt   => if pt == dest then findPath dest grid $ visit grid st pt --lookup dest st
-                 else findPath dest grid $ visit grid st pt
-    Nothing   => lookup dest st
-
-
-findPath' : (Int,Int) -> Grid -> State -> State
-findPath' dest grid st = case minNode $ toList st of
-    Just pt   => if pt == dest then st
-                 else findPath' dest grid $ visit grid st pt
-    Nothing   =>  st
+findPath dest grid st = case minNode st of
+    Just (_,pt)   => if pt == dest then findPath dest grid $ visit grid st pt --lookup dest st
+                   else findPath dest grid $ visit grid st pt
+    Nothing   => lookup dest st.scores
 
 bigger : (Int,Int) -> (Int,Int)
 bigger (x,y) = (x * 5 + 4, y * 5 + 4)
@@ -101,32 +106,25 @@ dump grid (x,y) =
 dump2 : Grid -> State -> Point -> IO ()
 dump2 grid st (x,y) =
     foldlM (\_,y => 
-        foldlM (\_,x => case lookup (x,y) st of
+        foldlM (\_,x => case lookup (x,y) st.scores of
             Just (cost,visit) => putStr $ (show cost) ++ " " 
             Nothing => putStr "- "
         ) () [0..x] >> putStrLn ""
     ) () [0..y]
-
 
 runFile : String -> IO ()
 runFile fn = do
     putStrLn $ "** " ++ fn
     Right text <- readFile fn | Left err => log err
     let mtx = parse text
-    
     let goal = foldl max (0,0) $ map fst $ Data.SortedMap.toList mtx
-    -- log $ (goal,grid)
-    log $ findPath goal (part1grid mtx) $ fromList [((0,0),(0,False))]
+    log $ findPath goal (part1grid mtx) $ initial
     log (bigger goal)
     let p2 = part2grid mtx goal
     log $ p2 (bigger goal)
     log $ p2 (10,0)
     putStr "P2 "
-    log $ findPath (bigger goal) (part2grid mtx goal) $ fromList [((0,0),(0,False))]
-    -- dump (part1grid mtx) goal
-    -- dump p2 $ bigger goal
-    -- let st = findPath' (bigger goal) (part2grid mtx goal) $ fromList [((0,0),(0,False))]
-    -- dump2 p2 st $ bigger goal
+    log $ findPath (bigger goal) (part2grid mtx goal) $ initial
     
 
 main : IO ()
