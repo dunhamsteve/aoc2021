@@ -9,42 +9,49 @@ This year I'm attempting AoC in Idris2, which I don't really know. A couple of d
 
 (backfilled on day 11)
 
-Day 1
+**Day 1**
+
 - Learned how to read files
 
-Day 2
+**Day 2**
 
-Day 3
+**Day 3**
+
 - Bailed for python
+- Went back and redid in Idris
 
-Day 4
+**Day 4**
+
 - Looks like I started to switch to python (beginnings of a parser) then switched back
 
-Day 5
+**Day 5**
+
 - I did this in python between parts 1/2
 - Decided to take the dx/dy approach while in python land
 - I changed the code for part two and left instructions to make the part 2 solution work for part 1
 
-Day 7
+**Day 7**
+
 - I think I did python first
 
-Day 8
+**Day 8**
+
 - Looks like I did it in python first and then Idris
 - This was the day I had issues trying to figure out Bitset.bit and ended up with a case statement instead.
 
-Day 9
+**Day 9**
 
-Day 10
+**Day 10**
 
-Day 11
+**Day 11**
 
-Day 12
+**Day 12**
 
-Day 13
+**Day 13**
 
 Had a weird issue I don't understand where (Int,Int) was a (Type,Type) ratherthan a Type.
 
-Day 15
+**Day 15**
 
 Initial version is a little slow, but works. I'll probably revisit and get rid of the sorted maps.  There also was
 a choice to be $O(n^2)$ instead of $O(n \log n)$, because I didn't want to take the time to write Heap.
@@ -54,4 +61,8 @@ a choice to be $O(n^2)$ instead of $O(n \log n)$, because I didn't want to take 
 Using a second SortedMap for the unvisited nodes: (score,Point) -> ()
 
     ./build/exec/day15  2.77s user 0.05s system 99% cpu 2.836 total
+
+**Day 16**
+
+Spent way too much time tracking down < 16 vs <= 16. Other than that pretty straightforward.  For fun, I decided to write a little combinator parser instead of using Data.String.Parser.  The "Show Packet" was a little bit of a pain because it had to be total, so I had to work in a Nat for depth.
 
