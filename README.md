@@ -66,3 +66,6 @@ Using a second SortedMap for the unvisited nodes: (score,Point) -> ()
 
 Spent way too much time tracking down < 16 vs <= 16. Other than that pretty straightforward.  For fun, I decided to write a little combinator parser instead of using Data.String.Parser.  The "Show Packet" was a little bit of a pain because it had to be total, so I had to work in a Nat for depth.
 
+**Day 17**
+
+I spent some time rearranging stuff to make it perform better, turns out the performance issue might have been the `nub` I was doing at the end. 
