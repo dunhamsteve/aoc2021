@@ -69,3 +69,8 @@ Spent way too much time tracking down < 16 vs <= 16. Other than that pretty stra
 **Day 17**
 
 I spent some time rearranging stuff to make it perform better, turns out the performance issue might have been the `nub` I was doing at the end. 
+
+**Day 18**
+
+Initially I parsed into a tree, but it was much easier to implement the normalization rules on a list of tokens.
+
