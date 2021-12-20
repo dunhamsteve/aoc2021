@@ -74,3 +74,6 @@ I spent some time rearranging stuff to make it perform better, turns out the per
 
 Initially I parsed into a tree, but it was much easier to implement the normalization rules on a list of tokens.
 
+**Day 19**
+
+This one was a bit of a slog. Dunno if I have the best solution, but it's fast, if complicated. I decided that an invariant would be the vectors between points, with some normalization that is described at the head of `day19/Main.idr`.
