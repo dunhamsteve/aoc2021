@@ -49,8 +49,7 @@ Show State where
 
 step : Alg -> State -> State
 step alg st =
-    let flippy = index 0 alg == '#'
-        inv' = flippy && not st.inv
+    let inv = if st.inv then '#' == index 511 alg else '#' == index 0 alg
         pts  = toList st.bits
         minX = foldl min 0 (map fst pts)
         maxX = foldl max 0 (map fst pts)
@@ -71,10 +70,10 @@ step alg st =
         -- Next value for a point, flipping if necessary
         next : (Int,Int) -> Maybe (Int,Int)
         next pt = 
-            if ('#' == index (restrict 511 $ cast $ window pt) alg) /= inv'
+            if ('#' == index (restrict 511 $ cast $ window pt) alg) /= inv
             then Just pt else Nothing
 
-    in ST inv' $ fromList $ concatMap (\y => mapMaybe (next . (,y)) [minX-3 .. maxX+3]) [minY - 3 .. maxY+3]
+    in ST inv $ fromList $ concatMap (\y => mapMaybe (next . (,y)) [minX-3 .. maxX+3]) [minY - 3 .. maxY+3]
     
 
 run : Alg -> State -> Nat -> State
