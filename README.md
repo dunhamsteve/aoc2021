@@ -77,3 +77,7 @@ Initially I parsed into a tree, but it was much easier to implement the normaliz
 **Day 19**
 
 This one was a bit of a slog. Dunno if I have the best solution, but it's fast, if complicated. I decided that an invariant would be the vectors between points, with some normalization that is described at the head of `day19/Main.idr`.
+
+**Day 20**
+
+The trick here was that an infinite number of cells can change in the actual input.
