@@ -81,3 +81,7 @@ This one was a bit of a slog. Dunno if I have the best solution, but it's fast, 
 **Day 20**
 
 The trick here was that an infinite number of cells change in problem given in input, but not the example.  The problem statement hints at this possibility.
+
+**Day 21**
+
+This is slower than I'd like and takes a bunch of memory, so I'm probably missing something.

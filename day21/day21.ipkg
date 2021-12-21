@@ -1,0 +1,3 @@
+package day21
+main = Main
+executable = day21
