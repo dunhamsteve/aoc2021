@@ -85,3 +85,9 @@ The trick here was that an infinite number of cells change in problem given in i
 **Day 21**
 
 This is slower than I'd like and takes a bunch of memory, so I'm probably missing something.
+
+    build/exec/day21  162.74s user 14.75s system 99% cpu 2:58.17 total
+
+Yeah, I convolved the two players states and didn't need to.
+
+    build/exec/day21  0.08s user 0.03s system 39% cpu 0.277 total

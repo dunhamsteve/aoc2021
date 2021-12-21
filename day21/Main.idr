@@ -3,6 +3,11 @@ import Debug.Trace
 -- die two pawns, board, 1..10
 -- die 1..100
 
+
+Interpolation Integer where interpolate = show
+Interpolation Int where interpolate = show
+Interpolation Nat where interpolate = show
+
 log : Show a => a -> IO ()
 log = putStrLn . show
 
@@ -43,73 +48,78 @@ run prob = do
     log prob
     putStrLn "P1 \{show $ part1 prob}"
 
--- This is a tuple because I don't want to define Eq/Ord.
--- count is last so we can aggregate
-Univ : Type
-Univ = (Int,Integer,Int,Integer,Integer) -- posA, scoreA, posB, scoreB, count
+record Univ where
+    constructor U
+    pos : Int
+    score : Int
+    count : Integer
 
-record State where
-    constructor ST
+Show Univ where show u = "U \{u.pos} \{u.score} \{u.count}"
+
+record Player where
+    constructor P
     states : List Univ
-    winA : Integer
-    winB : Integer
+    wins : Integer
 
-Interpolation Integer where interpolate = show
-Interpolation Nat where interpolate = show
+Show Player where show p = "P[#\{length p.states},\{p.wins}]"
 
-Show State where
-    show st = "ST #\{length st.states} \{st.winA} \{st.winB} "
+State : Type
+State = (Player,Player)
+
 
 combine : Int -> Int -> Int
 combine a b = case (a + b) `mod` 10 of 0 => 10; n => n
 
 ||| add dice rolls
 doadd : List Univ -> (Integer, Int) -> List Univ
-doadd states (mult, roll) =
-    map (\(pa,sa, pb,sb, cnt) =>
-            let pa' = combine pa roll
-                sa' = sa + cast pa'
-                cnt' = mult * cnt
-            in  (pa',sa',pb,sb,cnt')) states
-
-||| coalesce matches (this didn't seem to reduce the per round count,
-||| and adds a n log n, so I bailed
-coalesce : List Univ -> List Univ
-coalesce ss = go [] ss
+doadd states (mult, roll) = map addone states
     where
-        go : List Univ -> List Univ -> List Univ
-        go [] (x::xs) = go [x] xs
-        go xs@((a,b,c,d,cnt)::rest) (x@(a',b',c',d',cnt')::ys) =
-            if a==a' && b == b' && c == c' && d == d'
-            then go ((a,b,c,d,cnt+cnt')::rest) ys
-            else go (x::xs) ys  
-        go acc [] = acc
+        addone : Univ -> Univ
+        addone (U pos score count) =
+            let pos' = combine pos roll
+                score' = score + cast pos'
+                count' = mult * count
+            in  U pos' score' count'
+
 
 ||| peel off winners
-final : State -> State
-final st = go st.winA [] st.states 
+final : Integer -> Player -> Player
+final otherCount pl = go pl.wins [] pl.states 
     where
-        go : Integer -> List Univ -> List Univ -> State
-        go acc rval ((pa,sa, pb,sb, cnt) :: us) =
-            if sa >= 21 then go (acc+cnt) rval us
-            else go acc ((pb,sb, pa,sa, cnt)::rval) us -- flip a/b as we accumulate, so we can run the next turn
-        go acc rval [] = ST rval st.winB acc           -- flip the wins too
+        go : Integer -> List Univ -> List Univ -> Player
+        go acc rval (u :: us) =
+            if u.score >= 21 then go (acc + u.count*otherCount) rval us
+            else go acc (u::rval) us
+        go acc rval [] = P rval acc
+
+||| open states for player
+totalStates : Player -> Integer
+totalStates p = foldl (+) 0 $ map (.count) p.states
 
 rolls : List (Integer,Int)
 rolls = [(1,3),(3,4),(6,5),(7,6),(6,7),(3,8),(1,9)]
 
-step : State -> State
-step st@(ST states winA winB) =
-    let states' = concatMap (doadd states) rolls
-    in  final $ ST states' winA winB
+step : Player -> Player
+step p1 = { states := concatMap (doadd p1.states) rolls } p1
+
+mkPlayer : Int -> Player
+mkPlayer p = P [U p 0 1] 0
 
 mkState : (Int,Int) -> State
-mkState (pa,pb)= ST [(pa,0,pb,0,1)] 0 0
+mkState (pa,pb)= (mkPlayer pa, mkPlayer pb)
+
+dlog : Show a => a -> a
+dlog a = trace (show a) a
 
 run2 : State -> (Integer,Integer)
-run2 st = case step st of
-    (ST [] winA winB) => (winA, winB)
-    st => run2 $ trace (show st) st
+run2 (p1,p2) =
+    let p1' = final (totalStates p2) $ step p1
+    in case p1' of
+        P [] _ => (p1'.wins, p2.wins)
+        _      => run2 $ dlog (p2,p1')
+    -- case step st of
+    --     (p1,p2) => (winsA, winsB)
+    --     (p1,p2) => run2 $ trace (show st) st
 
 main = do
     putStrLn "eg"
