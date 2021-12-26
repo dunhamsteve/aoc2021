@@ -99,3 +99,7 @@ Actually got to use A* for this. I'd wondered if I'd ever have a use for it. On 
 **Day 24**
 
 Delayed because I was busy with Christmas prep.  This one took some effort because I went completely in a wrong direction.  I thought I was being asked to analyze the program, so I wrote code to translate into single static assignment form, and then a bunch of optimization passes. Eventually I retried with looking at all inputs (at each stage), winnowing duplicate states to the best key, and choosing true for all branch points that we had control over.
+
+**Day 25**
+
+This one was fairly easy.  It could be made faster, maybe by using Buffer, but good enough.
