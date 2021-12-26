@@ -91,3 +91,11 @@ This is slower than I'd like and takes a bunch of memory, so I'm probably missin
 Yeah, I convolved the two players states and didn't need to.
 
     build/exec/day21  0.08s user 0.03s system 39% cpu 0.277 total
+
+**Day 23**
+
+Actually got to use A* for this. I'd wondered if I'd ever have a use for it. On the coding side, a bit of frustration dealing with Fin and Vect. It seems like you can't do much with Fin (like add 1 or realize a Fin 4 is also a Fin 7).  I ended up just casting my problems away, but makes me wonder about the utility of Vect.
+
+**Day 24**
+
+Delayed because I was busy with Christmas prep.  This one took some effort because I went completely in a wrong direction.  I thought I was being asked to analyze the program, so I wrote code to translate into single static assignment form, and then a bunch of optimization passes. Eventually I retried with looking at all inputs (at each stage), winnowing duplicate states to the best key, and choosing true for all branch points that we had control over.

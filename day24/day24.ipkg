@@ -1,0 +1,4 @@
+package day24
+main = Main
+executable = day24
+depends = contrib
